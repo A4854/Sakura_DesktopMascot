@@ -2,10 +2,8 @@
 
 - [八重樱桌宠，从玩游戏到做游戏](#八重樱桌宠从玩游戏到做游戏)
 - [Features](#Features)
-- [Issues](#Issues)
 - [TODO](#TODO)
 - [解决GitHub下载过慢](#解决GitHub下载过慢)
-- [联系方式](#联系方式)
 
 ## 八重樱桌宠，从玩游戏到做游戏。
 
@@ -35,42 +33,31 @@
   - 重置桌宠位置
   - 查看文档，打开GitHub项目页面
   - 手动检查更新
-- 角色Shader根据UTS2修改而成
-- 支持半透明特效、后处理、抗锯齿（CTAA）
+- 支持半透明特效、Bloom、混合抗锯齿
 - 每周自动检查更新
-- 暂且仅支持win10、支持多屏幕（？）
-
-# Issues
-
-- 960M ( ? ) 之前的移动版显卡无法运行
-- CTAA修复flicking的同时会产生ghosting，经过努力后仍在缩放是会有较明显的ghosting，在触摸、移动时CTAA效果会打折扣
+- 暂且仅支持win10、支持多屏幕
 
 ## TODO
-- 进阶语音，随时间、节假日、活跃度、天气等改变的**蓝色气泡**语音（？）
+- 集成JTRP
+- 固定位置时渲染最小Bounding以优化效率
 - 更多角色
-- 更高效率、抗锯齿方案、HDRP
 
 ## 解决GitHub下载过慢
 
-可以通过修改Host解决GitHub下载过慢的问题（一些特殊网络环境如公用网络可能无效？），如果你不想了解细节步骤，请复制项目根目录下的**hosts**文件覆盖至**c:\windows\system32\drivers\etc**目录。
+浏览器中启用全局代理或者黑白名单PAC通过代理下载zip，git clone则需先配置代理：
 
-如果你已有自定义的host，请使用[DNS查询工具](http://tool.chinaz.com/dns/?type=1&amp;host=github.com&amp;ip=)查询：
-
-> github.com  
-> github.global.ssl.fastly.net  
-> codeload.github.com  
-> assets-cdn.github.com
-
-这几个网址并将延迟最低的IP连同域名写入**c:\windows\system32\drivers\etc**中**hosts**文件末尾，注意中间的空格，例如：
-
-> 52.74.223.119  github.com  
-> 69.171.248.65 github.global.ssl.fastly.net  
-> 54.251.140.56 codeload.github.com  
-> 185.199.111.153 assets-cdn.github.com
-
-## 联系方式
-
-B站、知乎：喵刀Hime  
-技术群：1046752881  
-粉丝群：635385414  
-公众号：JasonMa233
+> 已剪辑自: https://blog.csdn.net/tanningzhong/article/details/52817399  
+> 本地开启VPN后，GIt也需要设置代理，才能正常略过GFW，访问goole code等网站
+>
+> 设置如下（可复制）：
+>
+> git config --global https.proxy http://127.0.0.1:1080  
+> git config --global https.proxy https://127.0.0.1:1080  
+> git config --global http.proxy 'socks5://127.0.0.1:1080'   
+> git config --global https.proxy 'socks5://127.0.0.1:1080'
+>
+> 取消
+>
+> git config --global --unset http.proxy  
+> git config --global --unset https.proxy
+>
