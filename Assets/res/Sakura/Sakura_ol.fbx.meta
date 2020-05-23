@@ -2,8 +2,56 @@ fileFormatVersion: 2
 guid: 803696aeb356a38418d689b606b9ae72
 ModelImporter:
   serializedVersion: 19300
-  internalIDToNameTable: []
-  externalObjects: {}
+  internalIDToNameTable:
+  - first:
+      74: 1827226128182048838
+    second: Take 001
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Avatar_Sakura_C1_Material_Face
+    second: {fileID: 2100000, guid: 186bb312b781d0914c0fbd422876612d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Avatar_Sakura_C2_04_01_Material_Body
+    second: {fileID: 2100000, guid: 88576d00513328804181821e5b2732c0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Avatar_Sakura_C2_04_01_Material_Flower
+    second: {fileID: 2100000, guid: 1c781442bf624d9f4fcbe679cfdce079, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Avatar_Sakura_C2_04_01_Material_Hair
+    second: {fileID: 2100000, guid: 88d868a0d79e10b04f43fc99aa53ea35, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Avatar_Sakura_C2_04_01_Material_HairPing
+    second: {fileID: 2100000, guid: 15573809d03c1ba94afb891a1cde2a10, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Avatar_Sakura_C2_04_01_Material_Hat
+    second: {fileID: 2100000, guid: 0761a65234deccb54bfadaa87aab416f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Avatar_Sakura_Material_Eye_L
+    second: {fileID: 2100000, guid: 742c7fee821825ae4330af208efecb57, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Avatar_Sakura_Material_Eye_R
+    second: {fileID: 2100000, guid: 2fc94b5851cc1a97422d6350f78a0545, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Avatar_Sakura_Material_Mouth
+    second: {fileID: 2100000, guid: 358e811fa284298d40717bc8aa5f3b3a, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
@@ -68,7 +116,7 @@ ModelImporter:
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
   referencedClips:
-  - af585d1a4f6efe040adac530541c8fbb
+  - 5d9e03e60e58860419e5ff5da54ce5b5
   importAnimation: 1
   humanDescription:
     serializedVersion: 3
