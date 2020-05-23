@@ -4,7 +4,6 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
 
 public class InputManeger : MonoBehaviour
 {
@@ -23,18 +22,12 @@ public class InputManeger : MonoBehaviour
     bool _isInRoleRect = false;
     Vector2Int _lastMousePos = Vector2Int.zero;
     Transform _root, _rotCenter, _role;
-    PostProcessLayer ppl;
-    CTAA_PC _ctaa;
     GameObject _camera;
 
     private void Start()
     {
         _pool = FindObjectOfType<ObjPoolManeger>();
         _window = FindObjectOfType<TransparentWindow>();
-        ppl = Camera.main.transform.GetComponent<PostProcessLayer>();
-        Debug.Assert(ppl != null, $"{typeof(PostProcessLayer)}组件丢失");
-        _ctaa = FindObjectOfType<CTAA_PC>();
-        Debug.Assert(_ctaa != null, $"{typeof(CTAA_PC)}组件丢失");
         _camera = Camera.main.gameObject;
     }
 
@@ -100,7 +93,6 @@ public class InputManeger : MonoBehaviour
         }
         _lastScroll = Input.mouseScrollDelta.y;
 
-        _ctaa.ctaaMat.SetFloat("_move", GetMouseMove());
 
     }
 

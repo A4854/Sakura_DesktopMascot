@@ -12,6 +12,7 @@
         "integrationSavePath": "E:\\Code\\Git\\Sakura_DesktopMascot",
         "selectedDCCApp": 0,
         "prefabSavePaths": [
+            "res/Sakura",
             "res/Herugaa",
             "."
         ],
@@ -21,7 +22,7 @@
             "res/Herugaa",
             "."
         ],
-        "selectedFbxPath": 2,
+        "selectedFbxPath": 1,
         "selectedPrefabPath": 0,
         "dccOptionNames": [],
         "dccOptionPaths": [],
