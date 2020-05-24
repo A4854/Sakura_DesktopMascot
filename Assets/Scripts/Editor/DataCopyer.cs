@@ -6,6 +6,7 @@ using UnityEditor;
 public class DataCopyer : EditorWindow
 {
     GameObject src, dst;
+    bool normalizeName = true;
 
     [MenuItem("DesktopMascot/DataCopyer")]
     private static void ShowWindow()
@@ -19,6 +20,7 @@ public class DataCopyer : EditorWindow
     {
         src = EditorGUILayout.ObjectField("src", src, typeof(GameObject), true) as GameObject;
         dst = EditorGUILayout.ObjectField("dst", dst, typeof(GameObject), true) as GameObject;
+        normalizeName = GUILayout.Toggle(normalizeName, "Normalize Name");
         if (GUILayout.Button("Copy"))
         {
             DoCopy();
@@ -27,31 +29,35 @@ public class DataCopyer : EditorWindow
 
     void DoCopy()
     {
-        List<Transform> srcList = new List<Transform>(), dstList = new List<Transform>();
-        Dictionary<string, Transform> dstDic = new Dictionary<string, Transform>();
-        GetChildrenDeep(srcList, null, src.transform);
-        GetChildrenDeep(dstList, dstDic, dst.transform);
+        Dictionary<string, Transform> srcDic = new Dictionary<string, Transform>(), dstDic = new Dictionary<string, Transform>();
+        var dstName = dst.name;
+        dst.name = src.name;
+        GetChildrenDeep(srcDic, src.transform);
+        GetChildrenDeep(dstDic, dst.transform);
 
-        Debug.Log(srcList.Count + "   " + dstList.Count);
-        for (int i = 0; i < srcList.Count && i < dstList.Count; i++)
+        Debug.Log(srcDic.Count + "   " + dstDic.Count);
+
+        foreach (var dstPair in dstDic)
         {
-            if (srcList[i].name != dstList[i].name)
-                Debug.LogWarning($"{srcList[i].name} != {dstList[i].name}");
-            GameObject srcGo = srcList[i].gameObject, dstGo = dstList[i].gameObject;
+            if (!srcDic.ContainsKey(dstPair.Key))
+            {
+                Debug.LogWarning($"{dstPair.Key} do not exist!");
+                continue;
+            }
+            GameObject srcGo = srcDic[dstPair.Key].gameObject, dstGo = dstPair.Value.gameObject;
             dstGo.tag = srcGo.tag;
             dstGo.layer = srcGo.layer;
             CopyCompoment(srcGo, dstGo, dstDic);
         }
+        dst.name = dstName;
     }
 
-    void GetChildrenDeep(List<Transform> list, Dictionary<string, Transform> dic, Transform father)
+    void GetChildrenDeep(Dictionary<string, Transform> dic, Transform father)
     {
-        list.Add(father);
-        if (dic != null)
-            dic.Add(father.name, father);
+        dic.Add(normalizeName ? AnimationNameNormalization.NormalizeStr(father.name) : father.name, father);
         for (int i = 0; i < father.childCount; i++)
         {
-            GetChildrenDeep(list, dic, father.GetChild(i));
+            GetChildrenDeep(dic, father.GetChild(i));
         }
     }
 
@@ -72,7 +78,8 @@ public class DataCopyer : EditorWindow
                 if (component.GetType() == typeof(DynamicBone))
                 {
                     var db = dst.GetComponent<DynamicBone>();
-                    db.m_Root = dstDic[(component as DynamicBone).m_Root.name];
+                    string name = (component as DynamicBone).m_Root.name;
+                    db.m_Root = dstDic[normalizeName ? AnimationNameNormalization.NormalizeStr(name) : name];
                 }
             }
         }

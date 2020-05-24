@@ -2,15 +2,17 @@
 {
     Properties
     {
+        [Queue] _RenderQueue ( "Queue", int) = 2001
         _MainTex ("Texture", 2D) = "white" { }
+        _Offset ("Offset", float) = -1
     }
     SubShader
     {
-        Tags { "RenderType" = "Transparent" "LightMode" = "ForwardOnly" }
+        Tags { "LightMode" = "ForwardOnly" }
         Blend SrcAlpha OneMinusSrcAlpha
         LOD 100
-        Offset -0.5, 0
-        ZWrite Off
+        Offset [_Offset], 0
+        ZWrite on
         
         Pass
         {
@@ -60,4 +62,5 @@
             
         }
     }
+    CustomEditor "JTRP.ShaderDrawer.LWGUI"
 }

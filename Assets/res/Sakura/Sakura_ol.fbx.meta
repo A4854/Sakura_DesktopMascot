@@ -1,11 +1,8 @@
 fileFormatVersion: 2
-guid: 803696aeb356a38418d689b606b9ae72
+guid: 561005d117979fc42bc72ee38c14de08
 ModelImporter:
   serializedVersion: 19300
-  internalIDToNameTable:
-  - first:
-      74: 1827226128182048838
-    second: Take 001
+  internalIDToNameTable: []
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -37,6 +34,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Avatar_Sakura_C2_04_01_Material_Hat
     second: {fileID: 2100000, guid: 0761a65234deccb54bfadaa87aab416f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Avatar_Sakura_C2_04_01_Material_Skin
+    second: {fileID: 2100000, guid: 86c29d455fce2d74a9647e5f5932c222, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -116,7 +118,7 @@ ModelImporter:
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
   referencedClips:
-  - 5d9e03e60e58860419e5ff5da54ce5b5
+  - c946c69d4e0dbf24989f8cc78d8a5297
   importAnimation: 1
   humanDescription:
     serializedVersion: 3
