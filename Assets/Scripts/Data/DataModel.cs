@@ -97,7 +97,7 @@ public class DataModel
         }
     }
 
-    public void UpdateTransformData(ObjPoolManeger pool)
+    public void UpdateTransformData(ObjPoolManager pool)
     {
         var rootPool = pool.rootPool;
         var rolePool = pool.rolePool;

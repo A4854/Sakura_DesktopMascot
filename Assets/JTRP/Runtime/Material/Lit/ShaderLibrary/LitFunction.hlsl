@@ -102,14 +102,14 @@
     
     ///////////// color //////////////
     
-    void GetBaseColor(inout LitToonContext context, float3 mainTex, float skyIntensity, float shadowPower,
-    float3 shadowColor2, float shadowColorBlend2)
+    void GetBaseColor(inout LitToonContext context, float3 mainTex, float skyIntensity, float shadowPurity = 1,
+    float3 shadowColor2 = 0, float shadowColorBlend2 = 0)
     {
         float3 brightBaseColor = mainTex * context.dirLightColor;
         float3 evn = lerp(1, context.envColor, skyIntensity);
         
         context.brightBaseColor = brightBaseColor + brightBaseColor * evn;
-        context.darkBaseColor = GetShadowColor(mainTex, shadowPower) * context.dirLightColor * evn;
+        context.darkBaseColor = ShiftColorPurity(mainTex, shadowPurity) * context.dirLightColor * evn;
         
         context.darkBaseColor += shadowColor2 * lerp(1, context.darkBaseColor, shadowColorBlend2);
     }
@@ -118,7 +118,8 @@
     {
         return lerp(1, baseColor, _LightColorBlend) * addLightColor;
     }
-    float3 StdToonDiffuseLightingModel(LitToonContext context, float shadowIntensity, float3 shadowColor, float3 fixedShadowColor, float fixedShadowInt)
+    float3 StdToonDiffuseLightingModel(LitToonContext context, float shadowIntensity, float3 shadowColor,
+    float3 fixedShadowColor, float fixedShadowInt)
     {
         float3 diffuse = lerp(context.brightBaseColor, context.darkBaseColor, context.shadowStep * shadowIntensity);
         
