@@ -4,7 +4,9 @@
     {
         [Queue] _RenderQueue ( "Queue", int) = 2001
         _MainTex ("Texture", 2D) = "white" { }
+        _Color ("Color", Color) = (1, 1, 1, 1)
         _Offset ("Offset", float) = -1
+        _AlphaScale ("Alpha Scale", Range(0, 10)) = 1
     }
     SubShader
     {
@@ -40,6 +42,8 @@
             
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            float4 _Color;
+            float _AlphaScale;
             
             v2f vert(appdata v)
             {
@@ -50,12 +54,11 @@
                 return o;
             }
             
-            fixed4 frag(v2f i): SV_Target
+            float4 frag(v2f i): SV_Target
             {
-                // sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv);
-                // apply fog
-                UNITY_APPLY_FOG(i.fogCoord, col);
+                float4 col = tex2D(_MainTex, i.uv) * _Color;
+                col.a *= _AlphaScale;
+                col = saturate(col);
                 return col;
             }
             ENDCG
