@@ -104,6 +104,7 @@ namespace JTRP
 
         }
 
+#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
             if (!(UnityEditor.Selection.activeGameObject?.name == name) || !_debug)
@@ -114,5 +115,6 @@ namespace JTRP
             Gizmos.color = Color.blue;
             Gizmos.DrawLine(transform.position + _offset, transform.position + _offset + _forwardDir);
         }
+#endif
     }
 }//namespace JTRP

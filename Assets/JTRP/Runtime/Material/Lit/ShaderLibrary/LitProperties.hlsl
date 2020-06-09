@@ -10,22 +10,15 @@ TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex);
 
 TEXTURE2D(_NormalMap);
-SAMPLER(sampler_NormalMap);
 TEXTURE2D(_MatCapNormalMap);
-SAMPLER(sampler_MatCapNormalMap);
 TEXTURE2D(_ShadowMap);
 TEXTURE2D(_ShadowColorMap);
-SAMPLER(sampler_ShadowMap);
 TEXTURE2D(_LightMap);
-SAMPLER(sampler_LightMap);
 TEXTURE2D(_MatCap_Sampler);
-SAMPLER(sampler_MatCap_Sampler);
 TEXTURE2D(_NoiseMap);
-SAMPLER(sampler_NoiseMap);
 TEXTURE2D(_Emissive_Mask1);
-SAMPLER(sampler_Emissive_Mask1);
 TEXTURE2D(_Emissive_Mask2);
-SAMPLER(sampler_Emissive_Mask2);
+TEXTURE2D(_Outline_ColorMap);
 
 
 
@@ -155,7 +148,7 @@ uniform float _Emissive_MoveVer2;
 uniform float _Emissive_Speed2;
 
 uniform float _Outline_Width;
-uniform float4 _Outline_Color;
+uniform float3 _Outline_Color;
 uniform float _Offset_Z;
 uniform float _Outline_Lightness;
 uniform float _Outline_Purity;

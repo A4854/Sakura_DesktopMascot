@@ -24,7 +24,7 @@ public abstract class FaceCtrlBase : MonoBehaviour
     void Awake()
     {
         _faceManager = FindObjectOfType<FaceManager>();
-        Debug.Assert(_faceManager != null, "FaceManager单例丢失，请先在场景中创建");
+        Debug.Assert(_faceManager != null, "FaceManager Singleton is Missing! Create the singleton first ");
     }
 
     /// <summary>

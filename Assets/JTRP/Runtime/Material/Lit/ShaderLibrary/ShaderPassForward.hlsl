@@ -67,10 +67,10 @@ void Frag(PackedVaryingsToPS packedInput, out float4 outColor: SV_Target0)
     GetUVs(context, input);
     
     float4 _MainTex_var = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, context.uv0);
-    float4 _ShadowMap_var = SAMPLE_TEXTURE2D(_ShadowMap, sampler_ShadowMap, context.uv0);
-    float4 _ShadowColorMap_var = SAMPLE_TEXTURE2D(_ShadowColorMap, sampler_ShadowMap, context.uv0);
-    float4 _LightMap_var = SAMPLE_TEXTURE2D(_LightMap, sampler_LightMap, context.uv0);
-    float3 normalMap = UnpackNormalmapRGorAG(SAMPLE_TEXTURE2D_LOD(_NormalMap, sampler_NormalMap, context.uv0, 0), _NormalScale);
+    float4 _ShadowMap_var = SAMPLE_TEXTURE2D(_ShadowMap, sampler_MainTex, context.uv0);
+    float4 _ShadowColorMap_var = SAMPLE_TEXTURE2D(_ShadowColorMap, sampler_MainTex, context.uv0);
+    float4 _LightMap_var = SAMPLE_TEXTURE2D(_LightMap, sampler_MainTex, context.uv0);
+    float3 normalMap = UnpackNormalmapRGorAG(SAMPLE_TEXTURE2D_LOD(_NormalMap, sampler_MainTex, context.uv0, 0), _NormalScale);
     
     AlphaGammaCorrection(_MainTex_var.a, _ShadowMap_var.a, _LightMap_var.a);
     _MainTex_var.rgb = ShiftColorPurity(_MainTex_var.rgb, _Purity);

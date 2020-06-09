@@ -183,7 +183,7 @@ float3 GetMatCap(float3 V, float3 lightColor, float2 uv, float shadowStep, float
         float _Camera_Dir = _Camera_Right.y < 0 ? - 1: 1;
         float _Rot_MatCapUV_var_ang = - (_Camera_Dir * _Camera_Roll);
         
-        float3 _NormalMapForMatCap_var = SAMPLE_TEXTURE2D(_MatCapNormalMap, sampler_MatCapNormalMap, TRANSFORM_TEX(uv, _MatCapNormalMap)).rgb * _BumpScaleMatcap;
+        float3 _NormalMapForMatCap_var = SAMPLE_TEXTURE2D(_MatCapNormalMap, sampler_MainTex, TRANSFORM_TEX(uv, _MatCapNormalMap)).rgb * _BumpScaleMatcap;
         //v.2.0.5: MatCap with camera skew correction
         float3 viewNormal = (mul(UNITY_MATRIX_V, float4(normalize(N + _NormalMapForMatCap_var.rgb), 0))).rgb;
         float3 NormalBlend_MatcapUV_Detail = viewNormal.rgb * float3(-1, -1, 1);
@@ -200,7 +200,7 @@ float3 GetMatCap(float3 V, float3 lightColor, float2 uv, float shadowStep, float
             _Rot_MatCapUV_var.x = 1 - _Rot_MatCapUV_var.x;
         }*/
         //v.2.0.6 : LOD of Matcap
-        float4 _MatCap_Sampler_var = SAMPLE_TEXTURE2D_LOD(_MatCap_Sampler, sampler_MatCap_Sampler, TRANSFORM_TEX(_Rot_MatCapUV_var, _MatCap_Sampler), _BlurLevelMatcap);
+        float4 _MatCap_Sampler_var = SAMPLE_TEXTURE2D_LOD(_MatCap_Sampler, sampler_MainTex, TRANSFORM_TEX(_Rot_MatCapUV_var, _MatCap_Sampler), _BlurLevelMatcap);
         //MatcapMask
         float _Tweak_MatcapMaskLevel_var = saturate(matcapMask + _Tweak_MatcapMaskLevel);
         
@@ -217,8 +217,8 @@ float3 GetEmissive(float2 uv, float intensity1, float intensity2)
     #if defined(_EMISSIVE_ENABLE_ON)
         float time = _TimeParameters.x;
         float4 emiUV = float4(time * _Emissive_MoveHor1, time * _Emissive_MoveVer1, time * _Emissive_MoveHor2, time * _Emissive_MoveVer2);
-        float emiMask1 = SAMPLE_TEXTURE2D(_Emissive_Mask1, sampler_Emissive_Mask1, TRANSFORM_TEX(uv, _Emissive_Mask1) + emiUV.xy).r * (intensity1 + _Emissive_Level1);
-        float emiMask2 = SAMPLE_TEXTURE2D(_Emissive_Mask2, sampler_Emissive_Mask2, TRANSFORM_TEX(uv, _Emissive_Mask2) + emiUV.zw).r * (intensity2 + _Emissive_Level2);
+        float emiMask1 = SAMPLE_TEXTURE2D(_Emissive_Mask1, sampler_MainTex, TRANSFORM_TEX(uv, _Emissive_Mask1) + emiUV.xy).r * (intensity1 + _Emissive_Level1);
+        float emiMask2 = SAMPLE_TEXTURE2D(_Emissive_Mask2, sampler_MainTex, TRANSFORM_TEX(uv, _Emissive_Mask2) + emiUV.zw).r * (intensity2 + _Emissive_Level2);
         float3 emiColor1 = emiMask1 * lerp(_Emissive_ColorA1.rgb * _Emissive_IntA1, _Emissive_ColorB1.rgb * _Emissive_IntB1, sin(_Emissive_Speed1 * time) / 2 + 1);
         float3 emiColor2 = emiMask2 * lerp(_Emissive_ColorA2.rgb * _Emissive_IntA2, _Emissive_ColorB2.rgb * _Emissive_IntB2, sin(_Emissive_Speed2 * time) / 2 + 1);
         return max(emiColor1, emiColor2);
@@ -232,7 +232,7 @@ float3 GetEmissive(float2 uv, float intensity1, float intensity2)
 #endif
 // 各向异性高光
 // #ifdef _IS_HAIRMODE
-//     float _NoiseMap_var = SAMPLE_TEXTURE2D_LOD(_NoiseMap, sampler_NoiseMap, TRANSFORM_TEX(context.uv1, _NoiseMap), _HighLit_LOD).r;
+//     float _NoiseMap_var = SAMPLE_TEXTURE2D_LOD(_NoiseMap, sampler_MainTex, TRANSFORM_TEX(context.uv1, _NoiseMap), _HighLit_LOD).r;
 //     float3 HighLit_BT = ShiftTangent(bitangentWS, _HighLit_Scale, _NoiseMap_var, _HighLit_ScaleStep);
 //     float3 HighLit_color = _HighLit_Color.rgb * _LightMap_var.r * StrandSpecular(HighLit_BT, V, L, _HighLit_Range, _HighLit_Intensity + _HighLit_Level);
 //     float3 LowLit_color = _LowLit_Color.rgb * _LightMap_var.g * StrandSpecular(bitangentWS, V, L, _LowLit_Range, _LowLit_Intensity + _LowLit_Level);

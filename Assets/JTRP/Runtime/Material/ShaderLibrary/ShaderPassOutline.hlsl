@@ -74,8 +74,9 @@ float4 frag(VertexOutput i): SV_Target
     float2 Set_UV0 = i.uv0;
     float2 Set_UV1 = i.uv1;
     float4 _MainTex_var = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, Set_UV0) * _Color;
+    float3 _colorMap = SAMPLE_TEXTURE2D(_Outline_ColorMap, sampler_MainTex, Set_UV0).rgb * _Outline_Color;
     
-    float3 Set_BaseColor = _Outline_Color.rgb * lightColor * lerp(1, _MainTex_var.rgb, _Outline_Blend);
+    float3 Set_BaseColor = _colorMap * lightColor * lerp(1, _MainTex_var.rgb, _Outline_Blend);
     
     Set_BaseColor = ShiftColorPurity(Set_BaseColor, _Outline_Purity) * _Outline_Lightness;
     

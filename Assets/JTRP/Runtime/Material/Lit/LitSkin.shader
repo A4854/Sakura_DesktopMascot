@@ -102,7 +102,8 @@ Shader "JTRP/Lit Skin"
         
         [Main(OutLine)]
         _OutLine_Enable ("OutLine", float) = 1
-        [Sub(OutLine)] _Outline_Color ("Outline Color", Color) = (0.5, 0.5, 0.5, 1)
+        [Tex(OutLine, _Outline_Color)] _Outline_ColorMap ("Outline Color (RGB)", 2D) = "white" { }
+        [HideInInspector] _Outline_Color ("Outline Color", Color) = (1, 1, 1, 1)
         [Sub(OutLine)] _Outline_Width ("Width：宽度", float) = 2
         [SubToggle(OutLine)] _OriginNormal ("Origin Normal：原始法线", float) = 0
         [Sub(OutLine)] _Offset_Z ("Offset Z：深度偏移", float) = 0

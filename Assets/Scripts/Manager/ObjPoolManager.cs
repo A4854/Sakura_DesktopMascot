@@ -54,4 +54,17 @@ public class ObjPoolManager : MonoBehaviour
         return false;
     }
 
+    public Bounds GetMinAABB()
+    {
+        var bounds = new Bounds();
+        foreach (var root in _rootPool)
+        {
+            foreach (var renderer in root.GetComponentsInChildren<SkinnedMeshRenderer>())
+            {
+                bounds.Encapsulate(renderer.bounds);
+            }
+        }
+        return bounds;
+    }
+
 }

@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class TransparentWindow : MonoBehaviour
 {
+    public bool debugMode = false;
     [SerializeField]
     Material _material;
 
@@ -18,11 +19,11 @@ public class TransparentWindow : MonoBehaviour
     Texture2D _systemTrayTexture;
     Image _enableImage;
     Icon _systemTrayIcon;
-    int _width = 0, _height = 0, _xOffset = 0, _yOffset = 0;
+    int _maxWidth = 0, _maxHeight = 0, _xOffset = 0, _yOffset = 0;
     Config _config;
     ObjPoolManager _pool;
 
-    #region 导入API
+    #region Win32
 
     private struct MARGINS
     {
@@ -34,10 +35,10 @@ public class TransparentWindow : MonoBehaviour
     [StructLayout(LayoutKind.Sequential)]
     public struct RECT
     {
-        public int Left; //最左坐标
-        public int Top; //最上坐标
-        public int Right; //最右坐标
-        public int Bottom; //最下坐标
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
     }
     [DllImport("user32.dll")]
     public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
@@ -59,6 +60,17 @@ public class TransparentWindow : MonoBehaviour
     [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
     private static extern int SetWindowPos(IntPtr hwnd, IntPtr hwndInsertAfter, int x, int y, int cx, int cy, int uFlags);
 
+    [DllImport("kernel32.dll")]
+    static extern uint GetCurrentThreadId();
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    static extern int GetClassName(IntPtr hWnd, System.Text.StringBuilder lpString, int nMaxCount);
+
+    public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool EnumThreadWindows(uint dwThreadId, EnumWindowsProc lpEnumFunc, IntPtr lParam);
+    const string UnityWindowClassName = "UnityWndClass";
     const int GWL_STYLE = -16;
     const int GWL_EXSTYLE = -20;
     const uint WS_POPUP = 0x80000000;
@@ -66,25 +78,33 @@ public class TransparentWindow : MonoBehaviour
     const uint WS_EX_LAYERED = 0x00080000;
     const uint WS_EX_TRANSPARENT = 0x00000020;
     const uint WS_EX_TOOLWINDOW = 0x00000080;//隐藏图标
-    private IntPtr HWND_BOTTOM = new IntPtr(1);
-    private IntPtr HWND_TOP = new IntPtr(0);
-    private IntPtr HWND_TOPMOST = new IntPtr(-1);
-    private IntPtr HWND_NOTOPMOST = new IntPtr(-2);
-
-
+    IntPtr HWND_BOTTOM = new IntPtr(1);
+    IntPtr HWND_TOP = new IntPtr(0);
+    IntPtr HWND_TOPMOST = new IntPtr(-1);
+    IntPtr HWND_NOTOPMOST = new IntPtr(-2);
+    IntPtr _windowHandle = IntPtr.Zero;
     public IntPtr windowHandle
     {
         get
         {
             if (_windowHandle == IntPtr.Zero)
             {
-                _windowHandle = FindWindow(null, Application.productName);
+                uint threadId = GetCurrentThreadId();
+                EnumThreadWindows(threadId, (hWnd, lParam) =>
+                {
+                    var classText = new System.Text.StringBuilder(UnityWindowClassName.Length + 1);
+                    GetClassName(hWnd, classText, classText.Capacity);
+                    if (classText.ToString() == UnityWindowClassName)
+                    {
+                        _windowHandle = hWnd;
+                        return false;
+                    }
+                    return true;
+                }, IntPtr.Zero);
             }
             return _windowHandle;
         }
     }
-
-    IntPtr _windowHandle = IntPtr.Zero;
     #endregion
 
     void Start()
@@ -95,7 +115,7 @@ public class TransparentWindow : MonoBehaviour
         GetSystemInfo();
         if (!Application.isEditor)
         {
-            Application.targetFrameRate = 80;
+            Application.targetFrameRate = 60;
 
             LoadIconFile(Application.persistentDataPath);
 
@@ -114,10 +134,10 @@ public class TransparentWindow : MonoBehaviour
         // 获取多屏幕的总宽度和最高高度，以及任务栏offset
         foreach (var screen in System.Windows.Forms.Screen.AllScreens)
         {
-            _width += screen.Bounds.Width;
-            if (screen.Bounds.Height > _height)
+            _maxWidth += screen.Bounds.Width;
+            if (screen.Bounds.Height > _maxHeight)
             {
-                _height = screen.Bounds.Height;
+                _maxHeight = screen.Bounds.Height;
             }
             if (screen.Primary)
             {
@@ -126,23 +146,27 @@ public class TransparentWindow : MonoBehaviour
             }
         }
 
-        if (_width == 0 || _height == 0)
+        if (_maxWidth == 0 || _maxHeight == 0)
             Debug.LogError("获取分辨率失败");
     }
 
     void SetWindowStyle()
     {
-        SetWindowPos(windowHandle, HWND_TOPMOST, _xOffset, _yOffset, _width, _height, 4);
+        // SetWindowFullScreen();
+        Invoke("SetWindowMinAABB", 5);
 
-        // Set properties of the window
-        // See: https://msdn.microsoft.com/en-us/library/windows/desktop/ms633591%28v=vs.85%29.aspx
-        SetWindowLong(windowHandle, GWL_STYLE, WS_POPUP | WS_VISIBLE);
-        SetWindowLong(windowHandle, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT); // 实现鼠标穿透
+        if (!debugMode)
+        {
+            // Set properties of the window
+            // See: https://msdn.microsoft.com/en-us/library/windows/desktop/ms633591%28v=vs.85%29.aspx
+            SetWindowLong(windowHandle, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+            SetWindowLong(windowHandle, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT); // 实现鼠标穿透
 
-        MARGINS margins = new MARGINS() { cxLeftWidth = -1 };
-        // Extend the window into the client area
-        //See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa969512%28v=vs.85%29.aspx 
-        DwmExtendFrameIntoClientArea(windowHandle, ref margins);
+            MARGINS margins = new MARGINS() { cxLeftWidth = -1 };
+            // Extend the window into the client area
+            //See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa969512%28v=vs.85%29.aspx 
+            DwmExtendFrameIntoClientArea(windowHandle, ref margins);
+        }
 
         if (DataModel.Instance.Data.isTopMost)
         {
@@ -182,8 +206,8 @@ public class TransparentWindow : MonoBehaviour
         GetWindowRect(windowHandle, ref rect);
         Vector2Int leftBottom = new Vector2Int(rect.Left, rect.Bottom);
         var mousePos = new Vector2Int(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
-        leftBottom.y = _height - leftBottom.y;
-        mousePos.y = _height - mousePos.y;
+        leftBottom.y = _maxHeight - leftBottom.y;
+        mousePos.y = _maxHeight - mousePos.y;
 
         return mousePos - leftBottom;
     }
@@ -220,6 +244,21 @@ public class TransparentWindow : MonoBehaviour
                 SetWindowPos(windowHandle, HWND_TOP, 0, 0, 0, 0, 1 | 2);
             }
         }
+    }
+
+    public void SetWindowFullScreen()
+    {
+        SetWindowPos(windowHandle, HWND_TOPMOST, _xOffset, _yOffset, _maxWidth, _maxHeight, 4);
+    }
+    public void SetWindowMinAABB()
+    {
+        var bound = _pool.GetMinAABB();
+        SetWindowPos(windowHandle, HWND_TOPMOST,
+        _xOffset + (int)bound.min.x,
+        _yOffset + (int)bound.min.y,
+        (int)(bound.max.x - bound.min.x),
+        (int)(bound.max.y - bound.min.y),
+        4);
     }
 
     #region 托盘
@@ -374,17 +413,11 @@ public class TransparentWindow : MonoBehaviour
 
     void ShowRole()
     {
-        if (DataModel.Instance.Data.isTopMost||!_pool.IsAnyRoleEnable())
+        if (DataModel.Instance.Data.isTopMost || !_pool.IsAnyRoleEnable())
             return;
 
         SetWindowPos(windowHandle, HWND_TOPMOST, 0, 0, 0, 0, 1 | 2);
         SetWindowPos(windowHandle, HWND_NOTOPMOST, 0, 0, 0, 0, 1 | 2);
     }
     #endregion
-
-    // 配合TAA，用Gamma减少TAA的Ghosting
-    // private void OnRenderImage(RenderTexture src, RenderTexture dest)
-    // {
-    //     UnityEngine.Graphics.Blit(src, dest, _material);
-    // }
 }
