@@ -127,6 +127,9 @@ public class TransparentWindow : MonoBehaviour
         }
 
         InitRole();
+
+
+
     }
 
     void GetSystemInfo()
@@ -152,8 +155,8 @@ public class TransparentWindow : MonoBehaviour
 
     void SetWindowStyle()
     {
-        // SetWindowFullScreen();
-        Invoke("SetWindowMinAABB", 5);
+        SetWindowFullScreen();
+        Invoke("SetWindowMinAABB", 8);
 
         if (!debugMode)
         {
@@ -248,16 +251,37 @@ public class TransparentWindow : MonoBehaviour
 
     public void SetWindowFullScreen()
     {
-        SetWindowPos(windowHandle, HWND_TOPMOST, _xOffset, _yOffset, _maxWidth, _maxHeight, 4);
+        SetWindowPos(windowHandle, IntPtr.Zero, _xOffset, _yOffset, _maxWidth, _maxHeight, 4);
     }
     public void SetWindowMinAABB()
     {
+        var cam = Camera.main;
         var bound = _pool.GetMinAABB();
-        SetWindowPos(windowHandle, HWND_TOPMOST,
-        _xOffset + (int)bound.min.x,
-        _yOffset + (int)bound.min.y,
-        (int)(bound.max.x - bound.min.x),
-        (int)(bound.max.y - bound.min.y),
+        Vector3 min = cam.WorldToScreenPoint(bound.min),// windows max
+                max = cam.WorldToScreenPoint(bound.max);// windows min
+
+        max.y = _maxHeight - max.y;
+        min.y = _maxHeight - min.y;
+        var trueMin = Vector3.Max(max, Vector3.zero);
+        var trueMax = Vector3.Max(min, Vector3.one);
+
+        var wh = trueMax - trueMin;
+        float widthScale = wh.x / wh.y / cam.aspect;
+
+        var fov = cam.fieldOfView;
+        cam.fieldOfView = fov * (wh.y / _maxHeight);
+
+        cam.transform.position = new Vector3(
+            bound.center.x,
+            bound.center.y,
+            cam.transform.position.z
+        );
+
+        SetWindowPos(windowHandle, IntPtr.Zero,
+        _xOffset + (int)trueMin.x,
+        _yOffset + (int)trueMin.y,
+        (int)wh.x,
+        (int)wh.y,
         4);
     }
 

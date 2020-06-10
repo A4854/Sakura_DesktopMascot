@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using JTRP.Utility;
 
 public class ObjPoolManager : MonoBehaviour
 {
     Config _config;
     GameObject[] _rootPool, _rolePool;
+    SkinnedMeshRenderer[][] _rendererPool;
     public GameObject[] rootPool { get { return _rootPool; } }
     public GameObject[] rolePool { get { return _rolePool; } }
 
@@ -16,6 +18,15 @@ public class ObjPoolManager : MonoBehaviour
 
         _rootPool = new GameObject[_config.roles.Length];
         _rolePool = new GameObject[_config.roles.Length];
+        _rendererPool = new SkinnedMeshRenderer[_config.roles.Length][];
+    }
+
+    private void OnDestroy()
+    {
+        _config = null;
+        _rootPool = null;
+        _rolePool = null;
+        _rendererPool = null;
     }
 
     public void AddRole(GameObject role, int index)
@@ -26,9 +37,11 @@ public class ObjPoolManager : MonoBehaviour
             _rolePool[index] = role.GetComponentInChildren<RoleCtrlBase>().gameObject;
             if (_rolePool[index] == null)
                 Debug.LogError($"{role.name} missing {typeof(RoleCtrlBase)}");
+            else
+                _rendererPool[index] = role.GetComponentsInChildrenDeep<SkinnedMeshRenderer>();
         }
         else
-            Debug.LogError("AddRole() 数组越界");
+            Debug.LogError("AddRole() index out of range");
     }
 
     public void RemoveRole(int index)
@@ -39,6 +52,7 @@ public class ObjPoolManager : MonoBehaviour
             Destroy(_rolePool[index]);
             _rootPool[index] = null;
             _rolePool[index] = null;
+            _rendererPool[index] = null;
         }
     }
 
@@ -57,9 +71,11 @@ public class ObjPoolManager : MonoBehaviour
     public Bounds GetMinAABB()
     {
         var bounds = new Bounds();
-        foreach (var root in _rootPool)
+        for (int i = 0; i < _rendererPool.Length; i++)
         {
-            foreach (var renderer in root.GetComponentsInChildren<SkinnedMeshRenderer>())
+            if (_rendererPool[i] == null)
+                continue;
+            foreach (var renderer in _rendererPool[i])
             {
                 bounds.Encapsulate(renderer.bounds);
             }
